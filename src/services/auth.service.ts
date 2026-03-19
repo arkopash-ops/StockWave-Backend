@@ -1,6 +1,7 @@
 import bcrypt, { hash } from "bcryptjs";
 import UserModel from "../model/users.model.js";
 import { generateToken } from "../config/jwt.js";
+import { io } from "../server.js";
 
 interface RegisterInput {
     name: string;
@@ -52,6 +53,12 @@ export const register = async ({ name, email, password }: RegisterInput) => {
     const hashedPassword = await hash(password, 10);
     const newUser = await UserModel.create({ name, email, password: hashedPassword });
 
+    io.emit("newUser", {
+        id: newUser._id,
+        name: newUser.name,
+        email: newUser.email,
+    });
+
     return {
         id: newUser._id,
         name: newUser.name,
@@ -67,6 +74,7 @@ export const profiles = async () => {
     return users.map(user => ({
         id: user._id,
         name: user.name,
-        email: user.email
+        email: user.email,
+        role: user.role,
     }));
 };
