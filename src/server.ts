@@ -17,15 +17,16 @@ const startServer = async () => {
 
         seedAdmin();
 
-        const PORT = process.env.PORT || 8081;
+        const PORT = process.env.PORT || 8080;
 
         const server = http.createServer(app);      // creating http server from Express app
 
         // Attach server to Socket.IO
         io = new Server(server, {
             cors: {
-                origin: "*",
+                origin: "http://localhost:5173",
                 methods: ["GET", "POST"],
+                credentials: true,
             }
         });
 
@@ -37,7 +38,7 @@ const startServer = async () => {
             });
         });
 
-        app.listen(PORT, () => {
+        server.listen(PORT, () => {
             console.log(`Server running on http://localhost:${PORT}`);
         });
     } catch (error) {
